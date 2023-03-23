@@ -6,13 +6,14 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 
 @DynamoDbBean
 public class AtomicCounter {
-    private Integer counterId;
+    private int counter_id;
     private Long counter;
-    @DynamoDbPartitionKey
-    public Integer getAtomicCounterId() { return this.counterId; }
-    public void setAtomicCounterId(Integer accountId) { this.counterId = accountId; }
 
-    @DynamoDbAtomicCounter
-    public Long getCounter() { return counter; }
-    public void setCounter(Long counter) { this.counter = counter; }
+    @DynamoDbPartitionKey
+    public int getCounter_id (){ return this.counter_id; }
+    public void setCounter_id(int counterId) { this.counter_id = counterId; }
+
+    @DynamoDbAtomicCounter(startValue = 50)
+    public Long getCustomCounter() { return counter; }
+    public void setCustomCounter(Long counter) { this.counter = counter; }
 }

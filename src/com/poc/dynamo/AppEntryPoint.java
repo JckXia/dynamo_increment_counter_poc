@@ -7,6 +7,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +15,7 @@ import java.util.concurrent.Executors;
 
 public class AppEntryPoint {
     public static Integer COUNTER_NUM = 3;
+    public static Integer NUM_OF_STUDENTS= 200;
     public static void main(String[] args) {
        // SetupCounter();
        // generateUniqueIdentifier(24);
@@ -50,7 +52,11 @@ public class AppEntryPoint {
 
             String studentId = "SI" + counterId + "D" + generateUniqueIdentifier(this._student.getAge());
 
+
+            String newName = "Jack_" + studentId;
             this._student.setStudent_id(studentId);
+            this._student.setName(newName);
+
             System.out.println("Student age: "+ this._student.getAge() + "  Student ID: " + studentId);
             atomicCounterTable.updateItem(this._student);
         }
@@ -58,15 +64,18 @@ public class AppEntryPoint {
 
     // Use student age to load balance between different counters
     public static void createStudentObjects() {
-        Student studentA = new Student();
-        studentA.setAge(24);
 
-        Student studentB = new Student();
-        studentB.setAge(21);
+        List<Student> studentList = new ArrayList<Student>(NUM_OF_STUDENTS);
 
-        List<Student> studentList = List.of(studentA,studentB);
+        for(int i =0;i<NUM_OF_STUDENTS;i++)
+        {
+            int age = 21 + i;
+            Student newStudent = new Student();
+            newStudent.setAge(age);
+            studentList.add(newStudent);
+        }
 
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
         // Spin up some threads to test id atomicity increments
         for(Student s : studentList) {
@@ -75,6 +84,8 @@ public class AppEntryPoint {
 
         executor.shutdown();
     }
+
+
 
 
 
